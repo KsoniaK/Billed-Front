@@ -38,7 +38,7 @@ describe("Given that I am a user on login page", () => {
       const inputPasswordUser = screen.getByTestId("employee-password-input");
       fireEvent.change(inputPasswordUser, { target: { value: "azerty" } });
       expect(inputPasswordUser.value).toBe("azerty");
-
+      
       const form = screen.getByTestId("form-employee");
       const handleSubmit = jest.fn((e) => e.preventDefault());
 
@@ -77,7 +77,7 @@ describe("Given that I am a user on login page", () => {
         writable: true,
       });
 
-      // we have to mock navigation to test it
+      // Ici c'est une fausse fonction créee par le test, il vérifie qu'elle est bien appelée
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
@@ -99,6 +99,7 @@ describe("Given that I am a user on login page", () => {
       form.addEventListener("submit", handleSubmit);
       fireEvent.submit(form);
       expect(handleSubmit).toHaveBeenCalled();
+      // on vérifie la connexion complète du localStorage, on sécurise la navigation
       expect(window.localStorage.setItem).toHaveBeenCalled();
       expect(window.localStorage.setItem).toHaveBeenCalledWith(
         "user",
@@ -120,8 +121,10 @@ describe("Given that I am a user on login page", () => {
 describe("Given that I am a user on login page", () => {
   describe("When I do not fill fields and I click on admin button Login In", () => {
     test("Then It should renders Login page", () => {
+      // Le test injecte le HTML de la page Login / Pour le moment nous avons juste les inputs dans le DOM
       document.body.innerHTML = LoginUI();
 
+      // Le test remplit le champ email (pareil pour mdp)
       const inputEmailUser = screen.getByTestId("admin-email-input");
       expect(inputEmailUser.value).toBe("");
 
@@ -197,7 +200,7 @@ describe("Given that I am a user on login page", () => {
       let PREVIOUS_LOCATION = "";
 
       const store = jest.fn();
-
+      // le constructeur ne doit PAS lire les inputs, le DOM est prêt, mais les valeurs sont encore vides
       const login = new Login({
         document,
         localStorage: window.localStorage,

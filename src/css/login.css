@@ -66,6 +66,10 @@ input {
   margin-left: 16px;
   margin-bottom: 60px;
 }
-button {
+/* on cible la page car sans conflit avec Bootstrap */
+.form-newbill-container button{
   background-color: #0E5AE5;
+  color: white;
+  border: none;
 }
+

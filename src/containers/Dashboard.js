@@ -6,6 +6,7 @@ import USERS_TEST from '../constants/usersTest.js'
 import Logout from "./Logout.js"
 
 export const filteredBills = (data, status) => {
+  // ternaire = condition ? instruction 1 : instruction 2
   return (data && data.length) ?
     data.filter(bill => {
       let selectCondition
@@ -28,7 +29,11 @@ export const filteredBills = (data, status) => {
 }
 
 export const card = (bill) => {
-  const firstAndLastNames = bill.email.split('@')[0]
+  // console.log(bill);
+  // console.log(bill.email);
+  const firstAndLastNames = bill.email.split('@')[0] // sonia@gmail.com / const tab = ["sonia" , "gmail.com"]
+  // console.log(firstAndLastNames);
+  
   const firstName = firstAndLastNames.includes('.') ?
     firstAndLastNames.split('.')[0] : ''
   const lastName = firstAndLastNames.includes('.') ?
@@ -53,6 +58,8 @@ export const card = (bill) => {
 }
 
 export const cards = (bills) => {
+  // console.log(bills);
+  
   return bills && bills.length ? bills.map(bill => card(bill)).join("") : ""
 }
 
@@ -81,6 +88,14 @@ export default class {
   handleClickIconEye = () => {
     const billUrl = $('#icon-eye-d').attr("data-bill-url")
     const imgWidth = Math.floor($('#modaleFileAdmin1').width() * 0.8)
+    // console.log("billUrl =", billUrl, typeof billUrl)
+
+    //PROTECTION SCÉNARIO 9 : Les anciennes données non valides c'est normal (null avant correction)
+    if (!billUrl || billUrl === "null" || billUrl === "undefined" || billUrl.endsWith("/null")) {
+      alert("Aucun justificatif disponible pour cette note de frais")
+      return
+    }
+
     $('#modaleFileAdmin1').find(".modal-body").html(`<div style='text-align: center;'><img width=${imgWidth} src=${billUrl} alt="Bill"/></div>`)
     if (typeof $('#modaleFileAdmin1').modal === 'function') $('#modaleFileAdmin1').modal('show')
   }

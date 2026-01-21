@@ -37,12 +37,15 @@ export default class Login {
 
   }
 
+  // 2) ICI LE DEUXIEME ECHEC TEST
+  // l'id des inputs récupéré n'est pas le bon ! D'où l'erreur : "TypeError: Cannot read properties of null (reading 'value')"
   handleSubmitAdmin = e => {
     e.preventDefault()
     const user = {
       type: "Admin",
-      email: e.target.querySelector(`input[data-testid="employee-email-input"]`).value,
-      password: e.target.querySelector(`input[data-testid="employee-password-input"]`).value,
+      // SOLUTION : récupérer le bon id 
+      email: e.target.querySelector(`input[data-testid="admin-email-input"]`).value,
+      password: e.target.querySelector(`input[data-testid="admin-password-input"]`).value,
       status: "connected"
     }
     this.localStorage.setItem("user", JSON.stringify(user))
@@ -59,6 +62,7 @@ export default class Login {
   }
 
   // not need to cover this function by tests
+  // une méthode de la classe Login. Son rôle : connecter un utilisateur auprès du backend et de gérer le token jwt
   login = (user) => {
     if (this.store) {
       return this.store
@@ -66,7 +70,7 @@ export default class Login {
         email: user.email,
         password: user.password,
       })).then(({jwt}) => {
-        localStorage.setItem('jwt', jwt)
+        localStorage.setItem('jwt', jwt) // on garde le token pour que l’utilisateur reste connecté et puisse accéder aux pages protégées.
       })
     } else {
       return null

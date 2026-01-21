@@ -18,10 +18,24 @@ const row = (bill) => {
     </tr>
     `)
   }
+//Rq : c'est views/BillsUI.js qui est responsable de l'affichage, pas containers/Bills.js ! Donc le trie doit être fait avant le rendu donc ici
+// 1) ICI LE PREMIER ECHEC TEST
 
+  // data arrive non traitée (l'ordre des données dans l'API et non du plus récent au plus ancien comme le test l'attend : "Then bills should be ordered from earliest to latest"
+  // Ici l'ancienne version :
+  // const rows = (data) => {
+  //   return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
+  // }
+
+// 1) ICI LA SOLUTION, LA NOUVELLE VERSION : 
 const rows = (data) => {
-  return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
+  if (!data || !data.length) return ""
+  // TRI PAR DATE (du plus récent au plus ancien)
+  const sortedBills = data.sort((a, b) => new Date(b.date) - new Date(a.date))
+
+  return sortedBills.map(bill => row(bill)).join("")
 }
+
 
 export default ({ data: bills, loading, error }) => {
   

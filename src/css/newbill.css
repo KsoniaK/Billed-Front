@@ -1,7 +1,58 @@
 .form-newbill-container {
   width: 100%;
 }
-
+.form-newbill-container input{
+  border: 2px solid #0E5AE5;
+  border-radius: 5px;
+}
+.form-newbill-container label{
+  font-weight: bold;
+}
+[data-testid="form-new-bill"]{
+  display: flex;
+  justify-content: space-between;
+}
+.second-container-dg{
+  height: 2.5rem !important;
+}
+.first-container-dg, .second-container-dg{
+  display: grid;
+  width: 40%;
+}
+.tva-container{
+  display: flex;
+  justify-content: space-between;
+}
+.tva-container_error{
+  display: flex;
+  justify-content: space-between;
+}
+.buttons-container{
+  display: flex;
+  justify-content: start;
+}
+.buttons-container button{
+  margin-right: 3rem;
+  padding: .5rem 2rem;
+  cursor: pointer;
+  margin-top: 2rem;
+}
+.buttons-container button:hover{
+  background-color: #7bb1f7;
+}
+#expense-type{
+  margin-bottom: 1rem;
+  border: 2px solid #0E5AE5;
+  border-radius: 5px;
+  height: 3rem;
+}
+[data-testid="form-new-bill"] input{
+  margin-bottom: 1rem;
+  height: 3rem;
+}
+[data-testid="expense-coment"]{
+  height: 7rem!important;
+}
 .col-half {
   margin:auto;
   width: 75%;

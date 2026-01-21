@@ -8,7 +8,7 @@ export default (height) => {
     if (typeof user === 'string') {
       user = JSON.parse(user)
     }
-    if (user && user.type === 'Employee') {
+    if (user && user.type === 'Employee') { // Ajout de la condition pour qu'elle s'affiche aussi dans admin 
       return (
         `
         <div class='vertical-navbar' style='height: ${height}vh;'>

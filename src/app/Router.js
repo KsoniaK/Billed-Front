@@ -8,12 +8,23 @@ import BillsUI from "../views/BillsUI.js"
 import DashboardUI from "../views/DashboardUI.js"
 
 import { ROUTES, ROUTES_PATH } from "../constants/routes.js"
+import ErrorPage from "../views/ErrorPage.js"
+
+const AUTHORIZED_ROUTES = Object.values(ROUTES_PATH)
+// console.log(AUTHORIZED_ROUTES);
+
 
 export default () => {
   const rootDiv = document.getElementById('root')
   rootDiv.innerHTML = ROUTES({ pathname: window.location.pathname })
 
   window.onNavigate = (pathname) => {
+    // Ici on vérifie si route existe, si non = 404
+    if (!AUTHORIZED_ROUTES.includes(pathname)) {  
+      console.log(pathname);
+      rootDiv.innerHTML = ErrorPage()
+      return
+    }
 
     window.history.pushState(
       {},
@@ -38,6 +49,8 @@ export default () => {
         divIcon1.classList.add('active-icon')
         divIcon2.classList.remove('active-icon')
         new Bills({ document, onNavigate, store, localStorage })
+        // Empêche le retour en arrière
+        location.reload()
       }).catch(error => {
         rootDiv.innerHTML = ROUTES({ pathname, error })
       })
@@ -54,27 +67,37 @@ export default () => {
       bills.getBillsAllUsers().then(bills => {
           rootDiv.innerHTML = DashboardUI({data: {bills}})
           new Dashboard({document, onNavigate, store, bills, localStorage})
+          // Empêche le retour en arrière
+          location.reload()
         }).catch(error => {
         rootDiv.innerHTML = ROUTES({ pathname, error })
       })
     }
   }
 
+  // On empêche le retour en arrière (avec reload dans onNavigate pour Bills et Dasboard / à chaque clic en arrière on reload (voir si technique n'est pas mauvaise pratique))
   window.onpopstate = (e) => {
+    // console.log(e);
+    // console.log(e.target.location.href);
     const user = JSON.parse(localStorage.getItem('user'))
-    if (window.location.pathname === "/" && !user) {
+
+    if (!user) {
       document.body.style.backgroundColor="#0E5AE5"
-      rootDiv.innerHTML = ROUTES({ pathname: window.location.pathname })
+      onNavigate(ROUTES_PATH['Login'])
     }
-    else if (user) {
-      onNavigate(PREVIOUS_LOCATION)
+    else if (user.type === 'Employee') {
+      onNavigate(ROUTES_PATH['Bills'])
+    }
+    else if (user.type === 'Admin') {
+      onNavigate(ROUTES_PATH['Dashboard'])
     }
   }
 
   if (window.location.pathname === "/" && window.location.hash === "") {
     new Login({ document, localStorage, onNavigate, PREVIOUS_LOCATION, store })
     document.body.style.backgroundColor="#0E5AE5"
-  } else if (window.location.hash !== "") {
+  }
+   else if (window.location.hash !== "") {
     if (window.location.hash === ROUTES_PATH['Bills']) {
       rootDiv.innerHTML = ROUTES({ pathname: window.location.hash, loading: true })
       const divIcon1 = document.getElementById('layout-icon1')
@@ -108,9 +131,11 @@ export default () => {
       }).catch(error => {
         rootDiv.innerHTML = ROUTES({ pathname: window.location.hash, error })
       })
-    }
+    } 
+    // else if(window.location.hash != '#employee/bills' && window.location.hash != '#employee/bill/new' && window.location.hash != '#admin/dashboard'){
+    //     rootDiv.innerHTML = ErrorPage()
+    // }
   }
 
   return null
 }
-
