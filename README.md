@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="src/assets/images/logo.png" alt="Logo Billed" width="100">
+</p>
 
 ## L'architecture du projet :
 Ce projet, dit frontend, est connecté à un service API backend que vous devez aussi lancer en local.

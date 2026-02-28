@@ -1,3 +1,20 @@
-node_modules
-coverage
-.idea
+# Dossier des dépendances
+node_modules/
+
+# Dossiers de build
+dist/
+build/
+
+# Fichiers sensibles
+.env
+
+# MacOS
+.DS_Store
+src/.DS_Store
+coverage/
+
+# Logs npm/yarn
+npm-debug.log*
+yarn-error.log*
+
+
