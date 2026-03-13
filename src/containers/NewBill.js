@@ -1,5 +1,6 @@
 import { ROUTES_PATH } from "../constants/routes.js"
 import Logout from "./Logout.js";
+import ErrorPage from "../views/ErrorPage.js";
 
 export default class NewBill {
   constructor({ document, onNavigate, store, localStorage }) {
@@ -12,7 +13,7 @@ export default class NewBill {
     const user = JSON.parse(this.localStorage.getItem("user"))
     this.email = user.email
 
-    // Le logout ne réagissait pas ici car chaque container doit instancier Logout lui-même / Le Lougout est in comportement non une vue donc dans containers
+    // Le logout ne réagissait pas ici car chaque container doit instancier Logout lui-même / Le Lougout est un comportement non une vue donc dans containers
     this.logout = new Logout({
       document,
       localStorage,
@@ -151,9 +152,11 @@ handleChangeFile = e => {
           selector: this.billId,
         })
         .then(() => this.onNavigate(ROUTES_PATH["Bills"]))
-        .catch(err => console.error(err))
+        .catch(error => {
+          console.error(err)
+          this.onNavigate(ROUTES_PATH['Error'], { error: err.message })
+        })
     } else {
-      // pas obligatoire mais pour ce projet nécessaire = éviter un crash, permettre à des tests unitaires de passer, simuler un comportement quand store === null
       this.onNavigate(ROUTES_PATH["Bills"])
     }
   }

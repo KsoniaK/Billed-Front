@@ -77,12 +77,13 @@ export default () => {
 
   // On empêche le retour en arrière (avec reload dans onNavigate pour Bills et Dasboard / à chaque clic en arrière on reload (voir si technique n'est pas mauvaise pratique))
   window.onpopstate = (e) => {
-    // console.log(e);
-    // console.log(e.target.location.href);
+    // On lit localStorage.user pour savoir si l’utilisateur est connecté. / Même si l’utilisateur clique sur “retour”, l’état de connexion reste intact grâce à localStorage.
     const user = JSON.parse(localStorage.getItem('user'))
 
+    // Si user est absent :
     if (!user) {
       document.body.style.backgroundColor="#0E5AE5"
+      // = redirection vers la page de login.
       onNavigate(ROUTES_PATH['Login'])
     }
     else if (user.type === 'Employee') {
@@ -132,9 +133,6 @@ export default () => {
         rootDiv.innerHTML = ROUTES({ pathname: window.location.hash, error })
       })
     } 
-    // else if(window.location.hash != '#employee/bills' && window.location.hash != '#employee/bill/new' && window.location.hash != '#admin/dashboard'){
-    //     rootDiv.innerHTML = ErrorPage()
-    // }
   }
 
   return null

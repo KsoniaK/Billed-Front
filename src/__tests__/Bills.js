@@ -50,14 +50,22 @@ describe("Given I am connected as an employee", () => {
       });
     });
 
+  // Trie factures de la plus recente à la plus ancienne
+    // rq : test est une fonction de Jest pour définir un test unitaire.
     test("Then bills should be ordered from earliest to latest", () => {
+      // on simule l’affichage de la page Bills dans le test = on injecte ce HTML dans document.body pour pouvoir utiliser le DOM comme si on était dans le navigateur.
       document.body.innerHTML = BillsUI({ data: bills });
-      const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i)
+      // screen.getAllByText est fourni par @testing-library/dom pour récupérer tous les éléments du DOM qui correspondent à une expression régulière.
+      const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i) // L’expression régulière correspond à des dates au format YYYY-MM-DD, comme 2021-09-15.
+      // .map(a => a.innerHTML) transforme la liste d’éléments HTML en un tableau de chaînes de caractères représentant les dates.
         .map(a => a.innerHTML);
+        // antiChrono = une fonction de comparaison pour Array.sort(), Cela permet de trier les dates du plus récent au plus ancien (ordre inverse, anti-chronologique).
       const antiChrono = (a, b) => ((a < b) ? 1 : -1);
-      // Vérifier le tri réel, on teste le comportement utilisateur
+      // Vérifier le tri réel, on teste le comportement utilisateur / [...dates] crée une copie du tableau dates pour ne pas modifier l’original. / .sort(antiChrono) trie cette copie avec la fonction anti-chronologique définie avant.
       const datesSorted = [...dates].sort(antiChrono);
+      // datesSorted contient donc les dates dans l’ordre que l’utilisateur devrait voir. / toEqual vérifie que le tableau original dates est déjà trié correctement.
       expect(dates).toEqual(datesSorted);
+      // Si l’ordre réel des dates dans le DOM ne correspond pas à datesSorted, le test échoue.
     });
 
     test("Then clicking on the eye icon should open modal with the image", () => {
@@ -70,28 +78,47 @@ describe("Given I am connected as an employee", () => {
       expect(modal.querySelector("img")).toBeTruthy();
     });
 
+
     describe("When there is a server error", () => {
-      test("Then a 404 error displays ErrorPage", async () => {
-        const mockStore = {
-          bills: () => ({
-            list: jest.fn().mockRejectedValue({ message: "Erreur 404" })
-          })
-        };
-        const billsContainer = new Bills({ document, onNavigate: jest.fn(), store: mockStore, localStorage: window.localStorage });
-        const billsData = await billsContainer.getBills().catch(err => err);
-        expect(billsData.message).toBe("Erreur 404");
+
+    test("Then a 404 error displays ErrorPage", async () => {
+      const mockStore = {
+        bills: () => ({
+          list: jest.fn().mockRejectedValue({ status: 404, message: "Bills introuvables" })
+        })
+      };
+      const billsContainer = new Bills({ 
+        document, 
+        onNavigate: jest.fn(), 
+        store: mockStore, 
+        localStorage: window.localStorage 
       });
 
-      test("Then a 500 error displays ErrorPage", async () => {
-        const mockStore = {
-          bills: () => ({
-            list: jest.fn().mockRejectedValue({ message: "Erreur 500" })
-          })
-        };
-        const billsContainer = new Bills({ document, onNavigate: jest.fn(), store: mockStore, localStorage: window.localStorage });
-        const billsData = await billsContainer.getBills().catch(err => err);
-        expect(billsData.message).toBe("Erreur 500");
+      await expect(billsContainer.getBills()).rejects.toEqual({
+        status: 404,
+        message: "Bills introuvables"
       });
+    });
+
+    test("Then a 500 error displays ErrorPage", async () => {
+      const mockStore = {
+        bills: () => ({
+          list: jest.fn().mockRejectedValue({ status: 500, message: "Erreur serveur" })
+        })
+      };
+      const billsContainer = new Bills({ 
+        document, 
+        onNavigate: jest.fn(), 
+        store: mockStore, 
+        localStorage: window.localStorage 
+      });
+
+      await expect(billsContainer.getBills()).rejects.toEqual({
+        status: 500,
+        message: "Erreur serveur"
+      });
+    });
+
 
     // 2- Couvrir le catch final (containers/Bills l.82-89). On force une erreur non standard dans le store :
     describe("When getBills throws an unknown error", () => {
@@ -113,6 +140,7 @@ describe("Given I am connected as an employee", () => {
         });
       });
     });
+
 
     // 3-test d'intégration GET Bills
     describe("Given I am a user connected as Employee", () => {
