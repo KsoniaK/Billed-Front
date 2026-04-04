@@ -16,7 +16,9 @@ const AUTHORIZED_ROUTES = Object.values(ROUTES_PATH)
 
 export default () => {
   const rootDiv = document.getElementById('root')
-  rootDiv.innerHTML = ROUTES({ pathname: window.location.pathname })
+
+  const path = window.location.hash || ROUTES_PATH['Login']
+  rootDiv.innerHTML = ROUTES({ pathname: path })
 
   window.onNavigate = (pathname) => {
     // Ici on vérifie si route existe, si non = 404
@@ -26,11 +28,8 @@ export default () => {
       return
     }
 
-    window.history.pushState(
-      {},
-      pathname,
-      window.location.origin + pathname
-    )
+    window.location.hash = pathname
+
     if (pathname === ROUTES_PATH['Login']) {
       rootDiv.innerHTML = ROUTES({ pathname })
       document.body.style.backgroundColor="#0E5AE5"
@@ -94,7 +93,7 @@ export default () => {
     }
   }
 
-  if (window.location.pathname === "/" && window.location.hash === "") {
+  if (!window.location.hash) {
     new Login({ document, localStorage, onNavigate, PREVIOUS_LOCATION, store })
     document.body.style.backgroundColor="#0E5AE5"
   }
